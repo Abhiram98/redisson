@@ -48,15 +48,19 @@ public class LockPubSub extends PublishSubscribe<RedissonLockEntry> {
 
             value.getLatch().release();
         } else if (message.equals(READ_UNLOCK_MESSAGE)) {
-            while (true) {
-                Runnable runnableToExecute = value.getListeners().poll();
-                if (runnableToExecute == null) {
-                    break;
-                }
-                runnableToExecute.run();
-            }
+            tryRunAllListeners(value);
 
             value.getLatch().release(value.getLatch().getQueueLength());
+        }
+    }
+
+    private void tryRunAllListeners(RedissonLockEntry value) {
+        while (true) {
+            Runnable runnableToExecute = value.getListeners().poll();
+            if (runnableToExecute == null) {
+                break;
+            }
+            runnableToExecute.run();
         }
     }
 
