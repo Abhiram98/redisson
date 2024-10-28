@@ -123,7 +123,8 @@ public class ElementsSubscribeService {
     }
 
     private boolean isShuttingDown(Throwable ex) {
-        return ex.getCause() instanceof RedissonShutdownException;
+        return ex.getCause() instanceof RedissonShutdownException
+                || ex.getCause() instanceof RedissonShutdownException;
     }
 
 
