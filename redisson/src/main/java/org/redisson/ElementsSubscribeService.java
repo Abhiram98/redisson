@@ -81,7 +81,7 @@ public class ElementsSubscribeService {
 
         f.whenComplete((r, e) -> {
             if (e != null) {
-                if (e.getCause() instanceof RedissonShutdownException) {
+                if (isShuttingDown(e)) {
                     return;
                 }
 
@@ -123,7 +123,7 @@ public class ElementsSubscribeService {
     }
 
     private boolean isShuttingDown(Throwable ex) {
-        return ex.getCause() instanceof RedissonShutdownException
+        return ex instanceof RedissonShutdownException
                 || ex.getCause() instanceof RedissonShutdownException;
     }
 
