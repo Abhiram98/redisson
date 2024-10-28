@@ -38,11 +38,15 @@ public class SemaphorePubSub extends PublishSubscribe<RedissonLockEntry> {
     @Override
     protected void onMessage(RedissonLockEntry value, Long message) {
         Runnable runnableToExecute = value.getListeners().poll();
+        tryRunListener(runnableToExecute);
+
+        value.getLatch().release(Math.min(value.acquired(), message.intValue()));
+    }
+
+    private void tryRunListener(Runnable runnableToExecute) {
         if (runnableToExecute != null) {
             runnableToExecute.run();
         }
-
-        value.getLatch().release(Math.min(value.acquired(), message.intValue()));
     }
 
 }
